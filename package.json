@@ -61,7 +61,6 @@
       "include": null
     },
     "mac": {
-      "publish": "never",
       "target": [
         {
           "target": "dmg",
