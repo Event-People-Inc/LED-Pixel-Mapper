@@ -21,7 +21,7 @@ jobs:
         run: npm install
 
       - name: Build app
-        run: npm run electron:build:mac
+        run: npm run build && npx electron-builder --mac --arm64
 
       - name: Upload DMG
         uses: actions/upload-artifact@v4
