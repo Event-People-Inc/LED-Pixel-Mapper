@@ -74,6 +74,14 @@ const RAW: R[] = [
   ['Aluvision', 'Hi-LED 55 P2.8', 176, 176, 145],
   ['Aluvision', 'Hi-LED 55+ P2.8', 176, 176, 147.5],
   ['Aluvision', 'Hi-LED 55 Outdoor P3.9', 128, 128, 130],
+  ['Aluvision', 'Hi-LED R1421 convex P2.5', 300, 192, 243],
+  ['Aluvision', 'Hi-LED R1421 convex P2.8', 274, 176, 203],
+  ['Aluvision', 'Hi-LED R1476 convex P2.5', 300, 192, 203],
+  ['Aluvision', 'Hi-LED R1476 concave P2.8', 274, 176, 243],
+  ['Aluvision', 'Hi-LED R437 convex P2.5', 300, 192, 203],
+  ['Aluvision', 'Hi-LED R437 convex P2.8', 274, 176, 243],
+  ['Aluvision', 'Hi-LED R437 concave P2.5', 266, 192, 209],
+  ['Aluvision', 'Hi-LED R437 concave P2.8', 244, 176, 181],
 
   // ── AUO ────────────────────────────────────────────────────
   ['AUO', 'AUQ_P1.953', 256, 256],
