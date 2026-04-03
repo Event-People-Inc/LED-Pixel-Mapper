@@ -64,6 +64,17 @@ const RAW: R[] = [
   ['AOTO Electronics', 'U1.5ES', 416, 312, 140],
   ['AOTO Electronics', 'U1.8ES', 344, 258, 120],
   ['AOTO Electronics', 'U2.5ES', 256, 192, 130],
+  // ── Aluvision ──────────────────────────────────────────────
+  ['Aluvision', 'Hi-LED pro P1.5', 0, 0],
+  ['Aluvision', 'Hi-LED 55 P1.9', 256, 256, 120],
+  ['Aluvision', 'Hi-LED Pro 55 P1.9', 256, 256, 480],
+  ['Aluvision', 'Hi-LED Pro 55+ P1.9', 256, 256, 480],
+  ['Aluvision', 'Hi-LED 55 P2.5', 192, 192, 150],
+  ['Aluvision', 'Hi-LED 55+ P2.5', 192, 192, 152.5],
+  ['Aluvision', 'Hi-LED 55 P2.8', 176, 176, 145],
+  ['Aluvision', 'Hi-LED 55+ P2.8', 176, 176, 147.5],
+  ['Aluvision', 'Hi-LED 55 Outdoor P3.9', 128, 128, 130],
+
   // ── AUO ────────────────────────────────────────────────────
   ['AUO', 'AUQ_P1.953', 256, 256],
   // ── Absen ──────────────────────────────────────────────────
