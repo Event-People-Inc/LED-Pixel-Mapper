@@ -72,10 +72,8 @@
       ],
       "icon": "electron/icon.png",
       "category": "public.app-category.productivity",
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
-      "entitlements": null,
-      "entitlementsInherit": null
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
     },
     "dmg": {
       "title": "LED Pixel Mapper",
