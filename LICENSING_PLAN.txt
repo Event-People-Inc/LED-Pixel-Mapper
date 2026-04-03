@@ -1,0 +1,164 @@
+================================================================================
+  LED PIXEL MAPPER — LICENSING PLAN (v1.5.0+)
+  Last updated: 2026-03-29
+================================================================================
+
+GUMROAD PRODUCT DETAILS
+------------------------
+Product name:     LED Pixel Mapper
+Product ID:       hp7OsFV_tYWNK7cf2mKjFw==
+Product permalink: xxoea
+Purchase URL:     gumroad.com/l/xxoea
+License key format: XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX (e.g. 6F0E4C97-B72A4E69-A11BF6C4-AF6517E7)
+Gumroad verify API: POST https://api.gumroad.com/v2/licenses/verify
+  Params: product_id, license_key, increment_uses_count (true/false)
+  Returns: { success, uses, purchase: { ... } }
+
+
+ACTIVATION RULES
+-----------------
+- 2 machine activations per license key (Gumroad tracks via uses count)
+- First activation on a machine: call API with increment_uses_count=true, reject if uses > 2
+- Monthly re-verify (every 30 days): call API with increment_uses_count=false (no use counted)
+- Machine ID: generated UUID stored in Electron userData folder on first run
+- License cache stored locally in Electron userData as JSON (key + lastVerified timestamp + machineId)
+
+
+LICENSE STATUS STATES
+----------------------
+  "free"     — no license entered, all free-tier restrictions apply
+  "pro"      — valid license, verified within 30 days, all features unlocked
+  "overdue"  — license valid but >30 days since last check-in
+                → red border around entire app window
+                → funny joke popup appears
+                → all pro features still work (grace mode) until verified
+  "invalid"  — key was rejected or revoked by Gumroad
+
+
+OVERDUE CHECK-IN BEHAVIOR
+---------------------------
+- Red border around the entire Electron app window (CSS on root element)
+- Popup with a rotating funny joke, e.g.:
+    "Even vampires check in once a month. Please connect to the internet. 🧛"
+    "Your license called. It's lonely. Connect to verify. 📞"
+    "The last dinosaur forgot to check their license. Don't be a dinosaur. 🦕"
+    "NASA checks in with their satellites more often than this. Just saying. 🛰️"
+- User can dismiss popup but red border stays until verified
+- App is still fully functional (not locked out) — just nagged
+
+
+FREE vs PRO FEATURE SPLIT
+---------------------------
+
+FREE TIER RESTRICTIONS:
+  [ ] Max 2 walls per canvas (hard limit — "Add Wall" disabled at 2)
+  [ ] No undo (Ctrl+Z does nothing, button grayed with 🔒)
+  [ ] No redo (Ctrl+Y does nothing, button grayed with 🔒)
+  [ ] No tile rotation (buttons grayed with 🔒, R key does nothing)
+  [ ] No 10-bit mode (option visible but grayed with 🔒)
+  [ ] No CSV export (Production Report) — button disabled
+  [ ] No PDF export (PDF Report) — button disabled
+  [ ] No logo upload on exports — option hidden
+  [ ] All image exports (PNG/JPG, pixel maps, flow maps) get a HUGE watermark
+      → uses public/logo.png centered over the export image at high opacity
+  [ ] Tile library: only ROE and Absen tiles are usable
+      → All other brands visible but grayed out, pixel resolution and power draw HIDDEN
+  [ ] Processor library: only MCTRL4K is usable (free processor)
+      → OPEN QUESTION: user said "MCTRL4K and ROE processors" but there is NO ROE
+        processor in processorLibrary.ts — ROE makes tiles not processors.
+        → Need confirmation: is it just MCTRL4K, or should a ROE processor be added?
+      → All other processors visible but grayed out, specs hidden
+  [ ] No upgrade prompt nag on canvas (clean experience, just features disabled)
+
+PRO TIER (licensed):
+  [ ] Everything unlocked — unlimited walls, all exports, full library, rotation,
+      undo/redo, 10-bit, logo on exports, no watermark
+
+
+UI FOR LOCKED FEATURES
+------------------------
+- Grayed out controls show a 🔒 icon
+- Clicking a locked feature opens an "Upgrade to Pro" popup modal:
+    Title: "Pro Feature"
+    Body:  "This feature requires LED Pixel Mapper Pro."
+           "Get the full version at gumroad.com/l/xxoea"
+    Buttons: [Maybe Later]  [Get Pro →] (opens Gumroad in system browser)
+- Library tiles/processors outside free tier: grayed, specs replaced with "— Pro only"
+
+
+LICENSE ACTIVATION UX
+-----------------------
+- File menu → "Activate License..." opens a modal
+- Modal has: text input for license key, [Activate] button, status message
+- On success: "✓ License activated! Welcome to Pro." → app immediately unlocks
+- On failure: "✗ Invalid key or already used on 2 machines."
+- On network error: "Could not reach server. Check your internet connection."
+- License key stored in userData, persists across app restarts
+
+
+ARCHITECTURE
+-------------
+Main process (Node.js — NOT renderer, can't be bypassed via DevTools):
+  electron/licenseManager.js
+    - verifyWithGumroad(licenseKey, incrementUses) → calls Gumroad API via Node https
+    - loadCache() / saveCache() → reads/writes userData/license.json
+    - getMachineId() → reads/writes userData/machine.json (UUID)
+    - getStatus() → returns current LicenseStatus object
+    - activate(licenseKey) → first-time activation flow
+    - periodicCheck() → called on app start, re-verifies if >30 days
+
+IPC channels (preload.js exposes to renderer):
+  license:get-status   → renderer asks for current status
+  license:activate     → renderer sends key → main activates → returns result
+  license:check        → renderer triggers manual re-verify
+
+Renderer side:
+  src/license/licenseStore.ts  — Zustand store: { isPro, status, checkOverdue }
+  src/components/LicenseActivation.tsx — modal UI
+  src/components/ProGate.tsx — reusable wrapper for locked features
+
+Security level: MODERATE
+  - Verification in main process (harder to bypass)
+  - Light obfuscation of product ID in source
+  - asar packaged (dist not plaintext browseable)
+  - Determined users CAN crack it — user accepted this tradeoff
+  - No online-only lockout (grace mode keeps app usable when offline)
+
+
+FILES TO CREATE (new)
+----------------------
+  electron/licenseManager.js
+  src/license/licenseStore.ts
+  src/components/LicenseActivation.tsx
+  src/components/ProGate.tsx
+
+FILES TO MODIFY
+----------------
+  electron/preload.js          — expose license IPC
+  electron/main.js             — register license IPC handlers, call licenseManager on startup
+  src/App.tsx                  — red border overlay when overdue
+  src/components/FileMenu.tsx  — "Activate License..." menu item
+  src/store/useProjectStore.ts — wall limit (2 free), undo/redo no-ops for free
+  src/components/TopToolbar.tsx — undo/redo locked for free
+  src/components/WallCanvas.tsx — rotation locked for free
+  src/screens/ProjectSetup.tsx  — 10-bit locked, library tiles locked
+  src/components/PortPanel.tsx  — locked processors
+  src/utils/exportRenderers.ts  — watermark on all image exports for free
+  src/components/ExportDialog.tsx — CSV/PDF disabled, logo option hidden for free
+
+
+OPEN QUESTIONS (resolve before coding)
+----------------------------------------
+  1. ROE processor: no ROE processor exists in the library. Confirm free processor
+     is MCTRL4K only, OR confirm that a ROE processor entry should be added.
+  2. Funny jokes: use the 4 examples above, or does user want different ones?
+  3. Upgrade popup Gumroad URL confirmed as: gumroad.com/l/xxoea  ✓
+
+
+BUILD NOTE (from memory)
+-------------------------
+  electron-builder on Windows requires Developer Mode enabled:
+  Settings → System → For developers → Developer Mode ON
+  (needed for winCodeSign macOS symlink extraction)
+
+================================================================================

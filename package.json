@@ -1,0 +1,108 @@
+{
+  "name": "led-pixel-mapper",
+  "version": "1.5.3",
+  "description": "LED Pixel Mapper — Professional LED wall pixel mapping tool",
+  "author": {
+    "name": "Event People Inc",
+    "email": "info@eventpeopleinc.com"
+  },
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "electron:dev": "npm run build && electron .",
+    "electron:build": "npm run build && electron-builder",
+    "electron:build:win": "npm run build && electron-builder --win",
+    "electron:build:mac": "npm run build && electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.eventpeopleinc.ledpixelmapper",
+    "productName": "LED Pixel Mapper",
+    "copyright": "Copyright © 2026 Event People Inc. All rights reserved.",
+    "asar": true,
+    "asarUnpack": [],
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "electron/icon.ico",
+      "requestedExecutionLevel": "asInvoker",
+      "signtoolOptions": {
+        "signingHashAlgorithms": [
+          "sha256"
+        ],
+        "publisherName": "Event People Inc"
+      }
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "installerLanguages": [
+        "en_US"
+      ],
+      "include": null
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "electron/icon.icns",
+      "category": "public.app-category.productivity",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": null,
+      "entitlementsInherit": null
+    },
+    "dmg": {
+      "title": "LED Pixel Mapper",
+      "background": null,
+      "window": {
+        "width": 540,
+        "height": 380
+      }
+    }
+  },
+  "dependencies": {
+    "fflate": "^0.8.2",
+    "i18next": "^26.0.1",
+    "konva": "^9.3.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^17.0.1",
+    "react-konva": "^18.2.10",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "electron": "^32.0.0",
+    "electron-builder": "^25.0.0",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.4"
+  }
+}
