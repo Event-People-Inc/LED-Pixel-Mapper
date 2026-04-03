@@ -70,7 +70,7 @@
           ]
         }
       ],
-      "icon": "electron/icon.icns",
+      "icon": "electron/icon.png",
       "category": "public.app-category.productivity",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
