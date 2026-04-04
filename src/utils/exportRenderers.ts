@@ -614,6 +614,7 @@ function drawChainArrows(
   originX: number,
   originY: number,
   iconFn: (layer: Konva.Layer, x: number, y: number, size: number, color: string) => void,
+  viewDirection: 'front' | 'back' = 'front',
 ): void {
   for (const chain of chains) {
     if (chain.tileIds.length < 2) continue;
@@ -624,8 +625,11 @@ function drawChainArrows(
       if (!tile) continue;
       const profile = profileMap.get(tile.profileId);
       if (!profile) continue;
+      const relX = viewDirection === 'back'
+        ? bounds.w - (tile.x - bounds.x) - profile.pixelWidth
+        : tile.x - bounds.x;
       centers.push({
-        cx: originX + (tile.x - bounds.x + profile.pixelWidth  / 2) * scale,
+        cx: originX + (relX + profile.pixelWidth  / 2) * scale,
         cy: originY + (tile.y - bounds.y + profile.pixelHeight / 2) * scale,
         tileDim: Math.min(profile.pixelWidth, profile.pixelHeight) * scale,
       });
@@ -712,13 +716,17 @@ function drawFlowTiles(
   scale: number,
   originX: number,
   originY: number,
+  viewDirection: 'front' | 'back' = 'front',
 ): void {
   for (const tile of wall.tiles) {
     const profile = profileMap.get(tile.profileId);
     if (!profile) continue;
 
     const info = tileInfo.get(tile.id);
-    const tx = originX + (tile.x - bounds.x) * scale;
+    const relX = viewDirection === 'back'
+      ? bounds.w - (tile.x - bounds.x) - profile.pixelWidth
+      : tile.x - bounds.x;
+    const tx = originX + relX * scale;
     const ty = originY + (tile.y - bounds.y) * scale;
     const tw = profile.pixelWidth  * scale;
     const th = profile.pixelHeight * scale;
@@ -790,8 +798,9 @@ function drawFlowArrows(
   scale: number,
   originX: number,
   originY: number,
+  viewDirection: 'front' | 'back' = 'front',
 ): void {
-  drawChainArrows(layer, wall, profileMap, bounds, ports, scale, originX, originY, drawEthernetIcon);
+  drawChainArrows(layer, wall, profileMap, bounds, ports, scale, originX, originY, drawEthernetIcon, viewDirection);
 }
 
 export async function renderDataFlowExport(
@@ -885,8 +894,8 @@ export async function renderDataFlowExport(
   // Watermark — centred in tile area, very faint
   drawWatermark(layer, 'DATA FLOW MAP', originX + tileAreaW / 2, originY + tileAreaH / 2, tileAreaW, tileAreaH);
 
-  drawFlowTiles(layer, wall, profileMap, bounds, tileInfo, scale, originX, originY);
-  drawFlowArrows(layer, wall, profileMap, bounds, ports, scale, originX, originY);
+  drawFlowTiles(layer, wall, profileMap, bounds, tileInfo, scale, originX, originY, opts.viewDirection);
+  drawFlowArrows(layer, wall, profileMap, bounds, ports, scale, originX, originY, opts.viewDirection);
 
   // Footer with legend
   const footerY = stageH - FOOTER_H;
@@ -1192,13 +1201,17 @@ function drawPowerFlowTiles(
   scale: number,
   originX: number,
   originY: number,
+  viewDirection: 'front' | 'back' = 'front',
 ): void {
   for (const tile of wall.tiles) {
     const profile = profileMap.get(tile.profileId);
     if (!profile) continue;
 
     const info = tileInfo.get(tile.id);
-    const tx = originX + (tile.x - bounds.x) * scale;
+    const relX = viewDirection === 'back'
+      ? bounds.w - (tile.x - bounds.x) - profile.pixelWidth
+      : tile.x - bounds.x;
+    const tx = originX + relX * scale;
     const ty = originY + (tile.y - bounds.y) * scale;
     const tw = profile.pixelWidth  * scale;
     const th = profile.pixelHeight * scale;
@@ -1267,8 +1280,9 @@ function drawPowerFlowArrows(
   scale: number,
   originX: number,
   originY: number,
+  viewDirection: 'front' | 'back' = 'front',
 ): void {
-  drawChainArrows(layer, wall, profileMap, bounds, circuits, scale, originX, originY, drawPowerIcon);
+  drawChainArrows(layer, wall, profileMap, bounds, circuits, scale, originX, originY, drawPowerIcon, viewDirection);
 }
 
 export async function renderPowerFlowExport(
@@ -1361,8 +1375,8 @@ export async function renderPowerFlowExport(
   // Watermark — centred in tile area, very faint
   drawWatermark(layer, 'POWER FLOW MAP', originX + tileAreaW / 2, originY + tileAreaH / 2, tileAreaW, tileAreaH);
 
-  drawPowerFlowTiles(layer, wall, profileMap, bounds, tileInfo, scale, originX, originY);
-  drawPowerFlowArrows(layer, wall, profileMap, bounds, circuits, scale, originX, originY);
+  drawPowerFlowTiles(layer, wall, profileMap, bounds, tileInfo, scale, originX, originY, opts.viewDirection);
+  drawPowerFlowArrows(layer, wall, profileMap, bounds, circuits, scale, originX, originY, opts.viewDirection);
 
   // Footer with legend
   const footerY = stageH - FOOTER_H;
